@@ -14,6 +14,7 @@ Modifications in this fork
 - Use custom [remap](https://github.com/ReplayMod/remap) fork: https://github.com/Fallen-Breath/remap
   - Less useless warning messages
   - Disable message logging of remap's kotlin compiler message collector by default. You can re-enable that by setting `preprocess { enableRemapMessageCollector = true }`
+  - Add temporary fix for https://github.com/ReplayMod/remap/issues/18
 
 ### The Preprocessor
 To support multiple Minecraft versions with the ReplayMod, a [JCP](https://github.com/raydac/java-comment-preprocessor)-inspired preprocessor is used:
