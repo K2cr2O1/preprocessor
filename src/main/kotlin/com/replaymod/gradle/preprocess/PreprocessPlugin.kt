@@ -59,7 +59,9 @@ class PreprocessPlugin : Plugin<Project> {
             }
         } else {
             val inheritedLink = projectNode.links.find { it.first.findNode(coreProject) != null }
-            val (inheritedNode, extraMappings) = inheritedLink ?: graph.findParent(projectNode)!!
+            val (inheritedNode, extraMappings) = inheritedLink ?: requireNotNull(graph.findParent(projectNode)) {
+                "Cannot find a parent node for project node $projectNode"
+            }
             val (mappingFile, mappingFileInverted) = extraMappings
             val reverseMappings = (inheritedLink != null) != mappingFileInverted
             val inherited = parent.evaluationDependsOn(inheritedNode.project)
