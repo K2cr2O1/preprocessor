@@ -170,10 +170,6 @@ open class PreprocessTask : DefaultTask() {
 
     @Input
     @Optional
-    val tabIndentation = project.objects.property<Boolean>();
-
-    @Input
-    @Optional
     val enableRemapMessageCollector = project.objects.property<Boolean>();
 
     @Deprecated("Instead add an entry to `entries`.",
@@ -276,8 +272,7 @@ open class PreprocessTask : DefaultTask() {
                     val lines = text.lines()
                     val kws = keywords.get().entries.find { (ext, _) -> relPath.endsWith(ext) }
                     if (kws != null) {
-                        val indentationChar = if (tabIndentation.orElse(false).get()) '\t' else ' '
-                        processedSources[relPath] = CommentPreprocessor(indentationChar, vars.get()).convertSource(
+                        processedSources[relPath] = CommentPreprocessor(vars.get()).convertSource(
                                 kws.value,
                                 lines,
                                 lines.map { Pair(it, emptyList()) },
@@ -300,8 +295,7 @@ open class PreprocessTask : DefaultTask() {
 
         project.delete(entries.map { it.generated })
 
-        val indentationChar = if (tabIndentation.orElse(false).get()) '\t' else ' '
-        val commentPreprocessor = CommentPreprocessor(indentationChar, vars.get())
+        val commentPreprocessor = CommentPreprocessor(vars.get())
         sourceFiles.forEach { (relPath, inBase, outBase, overwritesPath) ->
             val file = inBase.resolve(relPath).toFile()
             val outFile = outBase.resolve(relPath).toFile()
@@ -334,14 +328,11 @@ open class PreprocessTask : DefaultTask() {
     }
 }
 
-class CommentPreprocessor(private val indentationChar: Char, private val vars: Map<String, Int>) {
+class CommentPreprocessor(private val vars: Map<String, Int>) {
     companion object {
         private val EXPR_PATTERN = Pattern.compile("(.+)(==|!=|<=|>=|<|>)(.+)")
         private val OR_PATTERN = Pattern.quote("||").toPattern()
         private val AND_PATTERN = Pattern.quote("&&").toPattern()
-    }
-
-    constructor(vars: Map<String, Int>) : this(' ', vars) {
     }
 
     var fail = false
@@ -384,12 +375,12 @@ class CommentPreprocessor(private val indentationChar: Char, private val vars: M
         }
     }
 
-    private val String.indentation: Int
-        get() = takeWhile { it == indentationChar }.length
+    private val String.indentation: String
+        get() = takeWhile { it == ' ' || it == '\t' }
 
     fun convertSource(kws: Keywords, lines: List<String>, remapped: List<Pair<String, List<String>>>, fileName: String): List<String> {
         val stack = mutableListOf<IfStackEntry>()
-        val indentStack = mutableListOf<Int>()
+        val indentStack = mutableListOf<String>()
         var active = true
         var remapActive = true
         var n = 0
@@ -492,15 +483,15 @@ class CommentPreprocessor(private val indentationChar: Char, private val vars: M
                 } else {
                     val currIndent = indentStack.peek()!!
                     if (trimmed.isEmpty()) {
-                        " ".repeat(currIndent) + kws.eval
-                    } else if (!trimmed.startsWith(kws.eval) && currIndent <= line.indentation) {
+                        currIndent + kws.eval
+                    } else if (!trimmed.startsWith(kws.eval) && currIndent.length <= line.indentation.length) {
                         // Line has been disabled, so we want to use its non-remapped content instead.
                         // For one, the remapped content would be useless anyway since it's commented out
                         // and, more importantly, if we do not preserve it, we might permanently loose it as the
                         // remap process is only guaranteed to work on code which compiles and since we're
                         // just about to comment it out, it probably doesn't compile.
                         ignoreErrors = true
-                        indentationChar.toString().repeat(currIndent) + kws.eval + " " + originalLine.substring(currIndent)
+                        currIndent + kws.eval + " " + originalLine.substring(currIndent.length)
                     } else {
                         line
                     }

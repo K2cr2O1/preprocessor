@@ -103,7 +103,6 @@ class PreprocessPlugin : Plugin<Project> {
                     keywords.convention(ext.keywords)
                     patternAnnotation.convention(ext.patternAnnotation)
                     manageImports.convention(ext.manageImports)
-                    tabIndentation.convention(ext.tabIndentation)
                     enableRemapMessageCollector.convention(ext.enableRemapMessageCollector)
                 }
                 val sourceJavaTask = project.tasks.findByName("source${name.capitalize()}Java")

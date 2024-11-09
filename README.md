@@ -1,12 +1,6 @@
 Modifications in this fork
 
-- Add simple tab indentation support
-  ```groovy
-  // in subprojects
-  preprocess {
-    tabIndentation = true
-  }
-  ```
+- Add automatic tab indentation support
 - Add `mainProjectFile` and `mainProjectFileRel` for more flexible subproject layout
   ```groovy
   // in root project
