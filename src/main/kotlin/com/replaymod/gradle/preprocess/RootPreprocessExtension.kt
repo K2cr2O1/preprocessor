@@ -3,9 +3,15 @@ package com.replaymod.gradle.preprocess
 import org.gradle.api.model.ObjectFactory
 import org.gradle.kotlin.dsl.property
 import java.io.File
+import javax.inject.Inject
 
-open class RootPreprocessExtension(objects: ObjectFactory) : ProjectGraphNodeDSL {
+open class RootPreprocessExtension @Inject constructor(
+    objects: ObjectFactory,
+) : ProjectGraphNodeDSL {
+    val strictExtraMappings = objects.property<Boolean>() // defaults to `false` for backwards compatibility
+
     private var rootNode: ProjectGraphNode? = null
+
     private val nodes = mutableSetOf<Node>()
 
     fun getRootNode(mainProject: String): ProjectGraphNode? {

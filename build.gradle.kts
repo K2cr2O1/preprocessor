@@ -38,7 +38,7 @@ gradlePlugin {
     }
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 
 tasks.withType<Test> {
     useJUnitPlatform()
@@ -59,8 +59,8 @@ repositories {
 dependencies {
     implementation(gradleApi())
     implementation(localGroovy())
-    implementation("com.github.Fallen-Breath:remap:0e0ced56")
-    implementation("net.fabricmc:tiny-mappings-parser:0.2.1.13")
+    implementation("com.github.Fallen-Breath:remap:8314494428")
+    implementation("net.fabricmc:mapping-io:0.6.1")
     testImplementation("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
 }
