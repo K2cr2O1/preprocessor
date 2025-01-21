@@ -21,7 +21,7 @@ plugins {
 }
 
 group = "com.github.replaymod"
-version = "SNAPSHOT"
+version = "1.0"
 
 val kotestVersion: String by project.extra
 
